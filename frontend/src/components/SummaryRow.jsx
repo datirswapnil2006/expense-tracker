@@ -7,13 +7,14 @@ import { fmtMoney } from "../categories.js";
 export default function SummaryRow({ totals }) {
   const isPositive = totals.balance >= 0;
   return (
-    <div style={styles.summaryRow}>
+    <div style={styles.summaryRow} className="summary-row">
       <div style={{ ...styles.summaryCard, ...styles.balanceCard }}>
         <div style={styles.summaryLabelRow}>
           <Wallet size={15} strokeWidth={2} />
           <span style={styles.summaryLabel}>CURRENT BALANCE</span>
         </div>
         <div
+          className="balance-figure"
           style={{
             ...styles.balanceFigure,
             color: isPositive ? "#F4F1EA" : "#FFD8C7",
@@ -29,7 +30,7 @@ export default function SummaryRow({ totals }) {
           <TrendingUp size={15} strokeWidth={2} color="#2A9D8F" />
           <span style={styles.summaryLabel}>TOTAL INCOME</span>
         </div>
-        <div style={{ ...styles.summaryFigure, color: "#1F6F64" }}>
+        <div className="summary-figure" style={{ ...styles.summaryFigure, color: "#1F6F64" }}>
           {fmtMoney(totals.income)}
         </div>
       </div>
@@ -39,7 +40,7 @@ export default function SummaryRow({ totals }) {
           <TrendingDown size={15} strokeWidth={2} color="#C45D3F" />
           <span style={styles.summaryLabel}>TOTAL EXPENSES</span>
         </div>
-        <div style={{ ...styles.summaryFigure, color: "#C45D3F" }}>
+        <div className="summary-figure" style={{ ...styles.summaryFigure, color: "#C45D3F" }}>
           {fmtMoney(totals.expense)}
         </div>
       </div>

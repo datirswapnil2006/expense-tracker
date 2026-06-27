@@ -139,8 +139,8 @@ export default function App() {
   return (
     <div style={styles.page}>
       <style>{fontImports}</style>
-      <div style={styles.shell}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap", marginBottom: 28 }}>
+      <div style={styles.shell} className="page-shell">
+        <div className="header-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap", marginBottom: 28 }}>
           <div style={{ flex: 1, minWidth: 240 }}>
             <Header onAdd={() => setModalOpen(true)} />
           </div>
@@ -151,7 +151,7 @@ export default function App() {
               background: "transparent", border: "1px solid #E5E0D6",
               borderRadius: 8, padding: "8px 14px", fontSize: 13,
               fontWeight: 600, color: "#7A7368", cursor: "pointer",
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', sans-serif", flexShrink: 0,
             }}
           >
             <LogOut size={14} strokeWidth={2} />
@@ -170,7 +170,7 @@ export default function App() {
         {!loading && !loadError && (
           <>
             <SummaryRow totals={totals} />
-            <div style={styles.mainGrid}>
+            <div style={styles.mainGrid} className="main-grid">
               <div style={styles.leftCol}>
                 <TransactionLedger
                   transactions={filteredTransactions}

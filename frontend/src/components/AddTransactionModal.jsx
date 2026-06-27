@@ -48,7 +48,7 @@ export default function AddTransactionModal({ onClose, onAdd }) {
 
   return (
     <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div style={styles.modal} className="modal-card" onClick={(e) => e.stopPropagation()}>
         <div style={styles.modalHeader}>
           <h3 style={styles.modalTitle}>New Ledger Entry</h3>
           <button style={styles.closeBtn} onClick={onClose} aria-label="Close">
@@ -80,7 +80,7 @@ export default function AddTransactionModal({ onClose, onAdd }) {
             </button>
           </div>
 
-          <div style={styles.fieldRow}>
+          <div style={styles.fieldRow} className="field-row">
             <label style={styles.fieldGroup}>
               <span style={styles.fieldLabel}>Amount</span>
               <div style={styles.amountInputWrap}>

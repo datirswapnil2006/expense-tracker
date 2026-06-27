@@ -17,6 +17,63 @@ const fontImports = `
   .ledger-row:hover button {
     opacity: 1;
   }
+
+  /* ---------------------------------------------------------------------
+     Responsive overrides. Inline styles can't use media queries, so the
+     layout-shifting rules (grid columns, font sizes, column visibility)
+     live here and target the same classNames assigned in styles.js.
+     Breakpoints: 1024px (laptop/tablet), 640px (mobile).
+  --------------------------------------------------------------------- */
+
+  /* Laptop / tablet: stack the two-column main grid, keep summary cards in a row */
+  @media (max-width: 1024px) {
+    .main-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* Mobile: stack everything, shrink type, collapse the ledger's category column */
+  @media (max-width: 640px) {
+    .page-shell {
+      padding: 20px 14px !important;
+    }
+    .app-title {
+      font-size: 26px !important;
+    }
+    .summary-row {
+      grid-template-columns: 1fr !important;
+    }
+    .balance-figure {
+      font-size: 30px !important;
+    }
+    .summary-figure {
+      font-size: 22px !important;
+    }
+    .header-row {
+      align-items: flex-start !important;
+    }
+    .add-btn span {
+      display: none;
+    }
+    .add-btn {
+      padding: 11px !important;
+    }
+    .ledger-category {
+      display: none !important;
+    }
+    .ledger-note {
+      white-space: normal !important;
+    }
+    .legend-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .modal-card {
+      max-width: 100% !important;
+    }
+    .field-row {
+      flex-direction: column !important;
+    }
+  }
 `;
 
 const styles = {

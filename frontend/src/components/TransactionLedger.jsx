@@ -28,7 +28,7 @@ export default function TransactionLedger({ transactions, filterType, setFilterT
       <div style={styles.ledgerColumnLabels}>
         <span style={{ flex: "0 0 64px" }}>Date</span>
         <span style={{ flex: 1 }}>Description</span>
-        <span style={{ flex: "0 0 110px" }}>Category</span>
+        <span className="ledger-category" style={{ flex: "0 0 110px" }}>Category</span>
         <span style={{ flex: "0 0 90px", textAlign: "right" }}>Amount</span>
         <span style={{ flex: "0 0 28px" }} />
       </div>
@@ -45,8 +45,8 @@ export default function TransactionLedger({ transactions, filterType, setFilterT
             return (
               <div key={t._id || t.id} style={styles.ledgerRow} className="ledger-row">
                 <span style={styles.ledgerDate}>{fmtDate(t.date)}</span>
-                <span style={styles.ledgerNote}>{t.note || "—"}</span>
-                <span style={styles.ledgerCategory}>
+                <span className="ledger-note" style={styles.ledgerNote}>{t.note || "—"}</span>
+                <span className="ledger-category" style={styles.ledgerCategory}>
                   <span style={{ ...styles.dot, background: meta.color }} />
                   {meta.label}
                 </span>

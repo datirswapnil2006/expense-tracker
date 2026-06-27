@@ -43,7 +43,7 @@ export default function SpendingChart({ pieData, totalExpense }) {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div style={styles.legendGrid}>
+          <div style={styles.legendGrid} className="legend-grid">
             {pieData.map((entry) => (
               <div key={entry.category} style={styles.legendItem}>
                 <span style={{ ...styles.dot, background: entry.color }} />

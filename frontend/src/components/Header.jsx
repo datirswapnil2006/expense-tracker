@@ -8,9 +8,9 @@ export default function Header({ onAdd }) {
     <div style={styles.header}>
       <div>
         <div style={styles.eyebrow}>LEDGER · PERSONAL FINANCE</div>
-        <h1 style={styles.title}>Your Balance Sheet</h1>
+        <h1 style={styles.title} className="app-title">Your Balance Sheet</h1>
       </div>
-      <button style={styles.addBtn} onClick={onAdd}>
+      <button style={styles.addBtn} className="add-btn" onClick={onAdd}>
         <Plus size={18} strokeWidth={2.5} />
         <span>New Entry</span>
       </button>
