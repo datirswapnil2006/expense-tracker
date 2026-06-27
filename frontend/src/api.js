@@ -3,7 +3,9 @@
 // Thin wrapper around fetch. Every transaction route on the backend gets
 // a matching function here, so components never call fetch() directly.
 
-const BASE_URL = "http://localhost:4000/api";
+// In development this falls back to localhost. In production, Vite injects
+// VITE_API_URL from the environment variable you set in Vercel.
+const BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:4000"}/api`;
 
 function getToken() {
   return localStorage.getItem("token");
