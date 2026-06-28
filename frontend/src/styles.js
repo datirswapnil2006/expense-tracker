@@ -14,8 +14,16 @@ const fontImports = `
   .ledger-row:hover {
     background: #F7F4ED;
   }
-  .ledger-row:hover button {
+  .ledger-row button[aria-label="Delete entry"] {
+    opacity: 0.55;
+  }
+  .ledger-row:hover button[aria-label="Delete entry"] {
     opacity: 1;
+    background: #FCEEE7;
+  }
+  .ledger-row button[aria-label="Delete entry"]:active {
+    opacity: 1;
+    background: #FCEEE7;
   }
 
   /* ---------------------------------------------------------------------
@@ -293,9 +301,10 @@ const styles = {
     border: "none",
     color: "#C45D3F",
     cursor: "pointer",
-    opacity: 0,
-    transition: "opacity 0.15s ease",
+    opacity: 0.55,
+    transition: "opacity 0.15s ease, background 0.15s ease",
     padding: 4,
+    borderRadius: 6,
   },
   emptyState: {
     padding: "32px 8px",

@@ -61,7 +61,12 @@ export default function TransactionLedger({ transactions, filterType, setFilterT
                 </span>
                 <button
                   style={styles.deleteBtn}
-                  onClick={() => onDelete(t._id || t.id)}
+                  onClick={() => {
+                    const label = t.note ? `"${t.note}"` : "this entry";
+                    if (window.confirm(`Delete ${label} (${fmtMoney(t.amount)})? This can't be undone.`)) {
+                      onDelete(t._id || t.id);
+                    }
+                  }}
                   aria-label="Delete entry"
                   title="Delete entry"
                 >
