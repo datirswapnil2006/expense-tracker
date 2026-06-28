@@ -3,10 +3,16 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { Schema } = mongoose;
 
-// Pragmatic email format check — not the full RFC 5322 spec (which is
-// notoriously complex and still lets through nonsense), but enough to
-// reject obviously malformed input like "notanemail" or "missing@domain".
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Email format check — not the full RFC 5322 spec (which is notoriously
+// complex and still lets through nonsense), but a properly tightened,
+// pragmatic check. Rejects the structural mistakes a loose "has @ and a
+// dot" regex misses:
+//   - leading/trailing/consecutive dots in the local part or domain
+//   - domain labels starting or ending with a hyphen
+//   - empty domain labels (e.g. "test@.com")
+//   - a TLD shorter than 2 letters
+const EMAIL_RE =
+  /^(?!.*\.\.)[A-Za-z0-9](?:[A-Za-z0-9._%+-]*[A-Za-z0-9])?@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
 
 // Best-effort "does this look like a plausible name" check. This can
 // never be perfect — short or unusual real names exist — so it only
@@ -53,7 +59,7 @@ const userSchema = new Schema(
     },
     currency: {
       type: String,
-      default: "USD",
+      default: "INR",
       maxlength: 3,
     },
   },
