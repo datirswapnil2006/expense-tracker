@@ -38,9 +38,10 @@ const transactionSchema = new Schema(
     },
     note: {
       type: String,
+      required: [true, "A description is required."],
       trim: true,
+      minlength: [1, "Description cannot be empty."],
       maxlength: 140,
-      default: "",
     },
     date: {
       type: Date,

@@ -57,3 +57,10 @@ export const fetchTrend = (params = {}) => {
   const query = new URLSearchParams(params).toString();
   return request(`/transactions/trend${query ? `?${query}` : ""}`);
 };
+
+// period: "day" | "week" | "month" | "year"
+// category: optional, e.g. "health" — omit to get all categories for the period
+export const fetchBreakdown = (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return request(`/transactions/breakdown${query ? `?${query}` : ""}`);
+};

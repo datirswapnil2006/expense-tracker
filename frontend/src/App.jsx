@@ -7,6 +7,7 @@ import SpendingChart from "./components/SpendingChart.jsx";
 import TrendChart from "./components/TrendChart.jsx";
 import AddTransactionModal from "./components/AddTransactionModal.jsx";
 import AuthScreen from "./components/AuthScreen.jsx";
+import BreakdownExplorer from "./components/BreakdownExplorer.jsx";
 import { LogOut } from "lucide-react";
 import { fontImports, styles } from "./styles.js";
 import { categoryMeta } from "./categories.js";
@@ -178,6 +179,7 @@ export default function App() {
                   setFilterType={setFilterType}
                   onDelete={deleteTransaction}
                 />
+                <BreakdownExplorer />
               </div>
               <div style={styles.rightCol}>
                 <SpendingChart pieData={pieData} totalExpense={totals.expense} />

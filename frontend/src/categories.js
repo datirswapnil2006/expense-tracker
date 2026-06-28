@@ -33,3 +33,27 @@ export const fmtDate = (iso) => {
   const d = new Date(iso.slice(0, 10) + "T00:00:00");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
+
+// Formats a "bucket" string from the /transactions/breakdown endpoint into
+// a human-readable label. Bucket shape depends on the period:
+//   day   -> "2026-06-09"  ->  "Jun 9, 2026"
+//   week  -> "2026-W24"    ->  "Week 24, 2026"
+//   month -> "2026-06"     ->  "June 2026"
+//   year  -> "2026"        ->  "2026"
+export const fmtBucket = (bucket, period) => {
+  if (period === "week") {
+    const [year, week] = bucket.split("-W");
+    return `Week ${week}, ${year}`;
+  }
+  if (period === "year") {
+    return bucket;
+  }
+  if (period === "month") {
+    const [year, month] = bucket.split("-");
+    const d = new Date(Number(year), Number(month) - 1, 1);
+    return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  }
+  // day
+  const d = new Date(bucket + "T00:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+};

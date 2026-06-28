@@ -31,6 +31,10 @@ export default function AddTransactionModal({ onClose, onAdd }) {
       setError("Pick a date for this entry.");
       return;
     }
+    if (!note.trim()) {
+      setError("Add a short description for this entry.");
+      return;
+    }
 
     setError("");
     setSubmitting(true);
@@ -124,7 +128,7 @@ export default function AddTransactionModal({ onClose, onAdd }) {
           </label>
 
           <label style={styles.fieldGroup}>
-            <span style={styles.fieldLabel}>Note (optional)</span>
+            <span style={styles.fieldLabel}>Description</span>
             <input
               type="text"
               placeholder="e.g. Weekly grocery run"
@@ -132,6 +136,7 @@ export default function AddTransactionModal({ onClose, onAdd }) {
               onChange={(e) => setNote(e.target.value)}
               style={styles.input}
               maxLength={80}
+              required
             />
           </label>
 

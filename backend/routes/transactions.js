@@ -204,4 +204,75 @@ router.get("/trend", async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// GET /api/transactions/breakdown
+// Spending broken down by time period AND category together — answers
+// questions like "how much did I spend on health this week/month/year."
+//
+// Query params:
+//   period   = "day" | "week" | "month" | "year"  (default: "month")
+//   type     = "income" | "expense"                (default: "expense")
+//   category = optional — filter to a single category (e.g. "health")
+//   from/to  = optional ISO date strings to bound the range
+//
+// Response shape:
+//   { period: "week", rows: [ { bucket: "2026-W26", category: "health", total: 100, count: 2 }, ... ] }
+//
+// "bucket" is a period label (e.g. "2026-06-23" for a day, "2026-W26" for
+// an ISO week, "2026-06" for a month, "2026" for a year) — the frontend
+// groups/sorts on this directly without re-deriving it from raw dates.
+// ---------------------------------------------------------------------------
+const PERIOD_FORMATS = {
+  day: "%Y-%m-%d",
+  week: "%G-W%V", // ISO 8601 week-numbering year + week number
+  month: "%Y-%m",
+  year: "%Y",
+};
+
+router.get("/breakdown", async (req, res) => {
+  try {
+    const { period = "month", type = "expense", category, from, to } = req.query;
+
+    if (!PERIOD_FORMATS[period]) {
+      return res.status(400).json({ error: "period must be one of: day, week, month, year." });
+    }
+
+    const match = { userId: new mongoose.Types.ObjectId(req.userId), type };
+    if (category) match.category = category;
+    if (from || to) {
+      match.date = {};
+      if (from) match.date.$gte = new Date(from);
+      if (to) match.date.$lte = new Date(to);
+    }
+
+    const rows = await Transaction.aggregate([
+      { $match: match },
+      {
+        $group: {
+          _id: {
+            bucket: { $dateToString: { format: PERIOD_FORMATS[period], date: "$date" } },
+            category: "$category",
+          },
+          total: { $sum: "$amount" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.bucket": 1, total: -1 } },
+      {
+        $project: {
+          _id: 0,
+          bucket: "$_id.bucket",
+          category: "$_id.category",
+          total: 1,
+          count: 1,
+        },
+      },
+    ]);
+
+    res.json({ period, rows });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to compute breakdown." });
+  }
+});
+
 module.exports = router;
