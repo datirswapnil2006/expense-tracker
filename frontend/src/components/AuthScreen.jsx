@@ -14,6 +14,22 @@ export default function AuthScreen({ onAuthenticated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Lightweight, format-only checks for instant feedback. The backend
+    // remains the real source of truth (including the gibberish-name
+    // check) — this just avoids a pointless round trip for the obvious
+    // mistakes, like a missing "@" or a one-character name.
+    if (mode === "signup") {
+      if (!name.trim() || name.trim().length < 2) {
+        setError("Please enter your name (at least 2 characters).");
+        return;
+      }
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const result =

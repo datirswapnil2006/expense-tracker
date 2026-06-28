@@ -24,6 +24,19 @@ router.post("/signup", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.status(201).json({ token, user: { id: user._id, email: user.email, name: user.name } });
   } catch (err) {
+    if (err.name === "ValidationError") {
+      // Pull out the first validation message (e.g. "Please enter a valid
+      // email address." or the name-plausibility message) so the user
+      // sees exactly what was wrong, not a generic failure.
+      const firstError = Object.values(err.errors)[0];
+      return res.status(400).json({ error: firstError ? firstError.message : "Invalid input." });
+    }
+    if (err.code === 11000) {
+      // Duplicate key error from the unique email index — a rare race
+      // condition where two signups for the same email happen at almost
+      // the exact same moment, slipping past the findOne check above.
+      return res.status(409).json({ error: "An account with this email already exists." });
+    }
     res.status(500).json({ error: "Failed to create account." });
   }
 });
