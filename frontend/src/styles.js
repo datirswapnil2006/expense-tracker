@@ -69,6 +69,9 @@ const fontImports = `
     .ledger-category {
       display: none !important;
     }
+    .ledger-balance {
+      display: none !important;
+    }
     .ledger-note {
       white-space: normal !important;
     }
@@ -285,6 +288,14 @@ const styles = {
     fontFamily: "'JetBrains Mono', monospace",
     fontSize: 14,
     fontWeight: 600,
+  },
+  ledgerBalance: {
+    flex: "0 0 100px",
+    textAlign: "right",
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize: 13,
+    fontWeight: 500,
+    color: "#7A7368",
   },
   dot: {
     width: 7,

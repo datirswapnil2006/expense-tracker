@@ -8,6 +8,7 @@ import TrendChart from "./components/TrendChart.jsx";
 import AddTransactionModal from "./components/AddTransactionModal.jsx";
 import AuthScreen from "./components/AuthScreen.jsx";
 import BreakdownExplorer from "./components/BreakdownExplorer.jsx";
+import { ToastContainer } from "./components/Toast.jsx";
 import { LogOut } from "lucide-react";
 import { fontImports, styles } from "./styles.js";
 import { categoryMeta } from "./categories.js";
@@ -22,6 +23,17 @@ export default function App() {
   const [loadError, setLoadError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [filterType, setFilterType] = useState("all");
+  const [toasts, setToasts] = useState([]);
+  const [highlightedId, setHighlightedId] = useState(null);
+
+  const showToast = useCallback((message, type = "success") => {
+    const id = crypto.randomUUID();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const dismissToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   // ---- On mount: is there already a token saved from a previous login? ----
   useEffect(() => {
@@ -69,22 +81,34 @@ export default function App() {
   }, [user]);
 
   // ---- Create ----
+  // Errors are intentionally re-thrown, not swallowed here — the modal's
+  // own handleSubmit catches them and displays them inline next to the
+  // form field they relate to (e.g. a validation message), which reads
+  // better than a generic toast for something the user needs to go fix.
   const addTransaction = useCallback(async (tx) => {
     const { transaction } = await api.createTransaction(tx);
     setTransactions((prev) => [transaction, ...prev]);
     setModalOpen(false);
-  }, []);
+    showToast("Entry created successfully.");
+
+    // Highlight the new row wherever it lands after the list re-sorts by
+    // date — matters most for backdated entries, which don't land at the
+    // top and could otherwise feel like they "disappeared."
+    const newId = transaction._id || transaction.id;
+    setHighlightedId(newId);
+    setTimeout(() => setHighlightedId((current) => (current === newId ? null : current)), 2200);
+  }, [showToast]);
 
   // ---- Delete ----
   const deleteTransaction = useCallback(async (id) => {
     try {
       await api.deleteTransaction(id);
       setTransactions((prev) => prev.filter((t) => (t._id || t.id) !== id));
+      showToast("Entry deleted successfully.");
     } catch (err) {
-      // In a fuller app, surface this in a toast instead of an alert.
-      alert(`Could not delete entry: ${err.message}`);
+      showToast(err.message || "Could not delete entry.", "error");
     }
-  }, []);
+  }, [showToast]);
 
   // ---- Derived state (same shape as the prototype, now fed by real data) ----
   const totals = useMemo(() => {
@@ -121,11 +145,36 @@ export default function App() {
     return Object.values(byDate).slice(-10);
   }, [transactions]);
 
+  // Running balance, computed like a real bank statement: oldest entry
+  // first, each one's balance = previous balance + income - expense.
+  // Same-day entries are ordered by createdAt (when they were actually
+  // saved) so the running total stays stable and doesn't reshuffle
+  // between renders when multiple transactions share a date.
+  const transactionsWithBalance = useMemo(() => {
+    const chronological = [...transactions].sort((a, b) => {
+      const dateDiff = new Date(a.date) - new Date(b.date);
+      if (dateDiff !== 0) return dateDiff;
+      return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+    });
+
+    let runningBalance = 0;
+    const balanceById = new Map();
+    chronological.forEach((t) => {
+      runningBalance += t.type === "income" ? t.amount : -t.amount;
+      balanceById.set(t._id || t.id, runningBalance);
+    });
+
+    return transactions.map((t) => ({
+      ...t,
+      runningBalance: balanceById.get(t._id || t.id),
+    }));
+  }, [transactions]);
+
   const filteredTransactions = useMemo(() => {
-    const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const sorted = [...transactionsWithBalance].sort((a, b) => new Date(b.date) - new Date(a.date));
     if (filterType === "all") return sorted;
     return sorted.filter((t) => t.type === filterType);
-  }, [transactions, filterType]);
+  }, [transactionsWithBalance, filterType]);
 
   // Still checking localStorage for an existing session — avoid a flash
   // of the login screen if we're about to find a valid token.
@@ -178,6 +227,7 @@ export default function App() {
                   filterType={filterType}
                   setFilterType={setFilterType}
                   onDelete={deleteTransaction}
+                  highlightedId={highlightedId}
                 />
                 <BreakdownExplorer />
               </div>
@@ -193,6 +243,8 @@ export default function App() {
       {modalOpen && (
         <AddTransactionModal onClose={() => setModalOpen(false)} onAdd={addTransaction} />
       )}
+
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }
